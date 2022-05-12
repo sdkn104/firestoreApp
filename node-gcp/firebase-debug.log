@@ -1,0 +1,88 @@
+[debug] [2022-04-29T09:02:20.899Z] ----------------------------------------------------------------------
+[debug] [2022-04-29T09:02:20.901Z] Command:       /usr/local/nvm/versions/node/v16.1.0/bin/node /usr/local/nvm/versions/node/v16.1.0/bin/firebase firestore:indexes
+[debug] [2022-04-29T09:02:20.902Z] CLI Version:   10.7.0
+[debug] [2022-04-29T09:02:20.902Z] Platform:      linux
+[debug] [2022-04-29T09:02:20.902Z] Node Version:  v16.1.0
+[debug] [2022-04-29T09:02:20.909Z] Time:          Fri Apr 29 2022 09:02:20 GMT+0000 (Coordinated Universal Time)
+[debug] [2022-04-29T09:02:20.909Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-04-29T09:02:20.915Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-04-29T09:02:20.970Z] TypeError: Cannot read property 'sort' of undefined
+    at haveValidTokens (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:396:53)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:489:9)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:145:33)
+    at Object.addRequestHeaders (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:156:19)
+    at requestFunction (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:205:28)
+    at Object.request (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:210:16)
+    at FirestoreIndexes.listIndexes (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/firestore/indexes.js:116:31)
+    at Command.actionFn (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/commands/firestore-indexes-list.js:18:36)
+    at /usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/command.js:190:25
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2022-04-29T09:02:32.831Z] ----------------------------------------------------------------------
+[debug] [2022-04-29T09:02:32.833Z] Command:       /usr/local/nvm/versions/node/v16.1.0/bin/node /usr/local/nvm/versions/node/v16.1.0/bin/firebase firestore:indexes
+[debug] [2022-04-29T09:02:32.834Z] CLI Version:   10.7.0
+[debug] [2022-04-29T09:02:32.834Z] Platform:      linux
+[debug] [2022-04-29T09:02:32.834Z] Node Version:  v16.1.0
+[debug] [2022-04-29T09:02:32.835Z] Time:          Fri Apr 29 2022 09:02:32 GMT+0000 (Coordinated Universal Time)
+[debug] [2022-04-29T09:02:32.835Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-04-29T09:02:32.843Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-04-29T09:02:32.894Z] TypeError: Cannot read property 'sort' of undefined
+    at haveValidTokens (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:396:53)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:489:9)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:145:33)
+    at Object.addRequestHeaders (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:156:19)
+    at requestFunction (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:205:28)
+    at Object.request (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:210:16)
+    at FirestoreIndexes.listIndexes (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/firestore/indexes.js:116:31)
+    at Command.actionFn (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/commands/firestore-indexes-list.js:18:36)
+    at /usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/command.js:190:25
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2022-04-29T09:03:53.010Z] ----------------------------------------------------------------------
+[debug] [2022-04-29T09:03:53.012Z] Command:       /usr/local/nvm/versions/node/v16.1.0/bin/node /usr/local/nvm/versions/node/v16.1.0/bin/firebase firestore:indexes
+[debug] [2022-04-29T09:03:53.013Z] CLI Version:   10.7.0
+[debug] [2022-04-29T09:03:53.013Z] Platform:      linux
+[debug] [2022-04-29T09:03:53.013Z] Node Version:  v16.1.0
+[debug] [2022-04-29T09:03:53.013Z] Time:          Fri Apr 29 2022 09:03:53 GMT+0000 (Coordinated Universal Time)
+[debug] [2022-04-29T09:03:53.013Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-04-29T09:03:53.016Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-04-29T09:03:53.066Z] TypeError: Cannot read property 'sort' of undefined
+    at haveValidTokens (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:396:53)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:489:9)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:145:33)
+    at Object.addRequestHeaders (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:156:19)
+    at requestFunction (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:205:28)
+    at Object.request (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:210:16)
+    at FirestoreIndexes.listIndexes (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/firestore/indexes.js:116:31)
+    at Command.actionFn (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/commands/firestore-indexes-list.js:18:36)
+    at /usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/command.js:190:25
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2022-04-29T09:04:03.928Z] ----------------------------------------------------------------------
+[debug] [2022-04-29T09:04:03.931Z] Command:       /usr/local/nvm/versions/node/v16.1.0/bin/node /usr/local/nvm/versions/node/v16.1.0/bin/firebase firestore:indexes
+[debug] [2022-04-29T09:04:03.931Z] CLI Version:   10.7.0
+[debug] [2022-04-29T09:04:03.931Z] Platform:      linux
+[debug] [2022-04-29T09:04:03.931Z] Node Version:  v16.1.0
+[debug] [2022-04-29T09:04:03.932Z] Time:          Fri Apr 29 2022 09:04:03 GMT+0000 (Coordinated Universal Time)
+[debug] [2022-04-29T09:04:03.932Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-04-29T09:04:03.935Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-04-29T09:04:03.985Z] TypeError: Cannot read property 'sort' of undefined
+    at haveValidTokens (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:396:53)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/auth.js:489:9)
+    at Object.getAccessToken (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:145:33)
+    at Object.addRequestHeaders (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:156:19)
+    at requestFunction (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:205:28)
+    at Object.request (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/api.js:210:16)
+    at FirestoreIndexes.listIndexes (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/firestore/indexes.js:116:31)
+    at Command.actionFn (/usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/commands/firestore-indexes-list.js:18:36)
+    at /usr/local/nvm/versions/node/v16.1.0/lib/node_modules/firebase-tools/lib/command.js:190:25
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+[error] 
+[error] Error: An unexpected error has occurred.

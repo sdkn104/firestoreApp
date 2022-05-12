@@ -1,0 +1,36 @@
+
+Create a Cloud Firestore database
+- create a Firebase project: In the Firebase console
+- Follow the database creation workflow
+- Select a starting mode for your Cloud Firestore Security Rules:
+- Select a location for your database.
+
+Create Web App (Web version 8)
+- Register Web App to firebase project
+    In the center of the Firebase console's project overview page, click the Web icon (plat_web) to launch the setup workflow.
+    Enter your app's nickname.
+    -> id, keyが発行される(firebaseConfig)。これをアプリに記述する。
+
+- Add firestore library to app
+      npm install firebase
+      const firebase = require("firebase");
+      ...
+   or simply
+      <script src="https://www.g..."
+
+
+Create Cloud function
+- install firebase CLI
+     npm install [-g] firebase-tools
+- firebase login   # google accuntでログイン
+- cd firebase project directory
+- firebase init firestore
+- firebase init functions 
+
+- vi functions/index.js
+     -> add function 
+- firebase deploy --only functions  [--project project-id]
+- firebase use  -> show project alias (reading .firebaserc)
+- firebase projects:list  -> show projects of login ID
+- test https://us-central1-MY_PROJECT.cloudfunctions.net/function-name?...
+
