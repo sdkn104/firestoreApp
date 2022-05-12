@@ -22,10 +22,12 @@ Create Web App (Web version 8)
 Create Cloud function
 - install firebase CLI
      npm install [-g] firebase-tools
-- firebase login   # google accuntでログイン
+- firebase login [--no-localhost]     # google accuntでログイン
 - cd firebase project directory
 - firebase init firestore
 - firebase init functions 
+
+* cd functions; npm install (for reconstruct environment)
 
 - vi functions/index.js
      -> add function 
