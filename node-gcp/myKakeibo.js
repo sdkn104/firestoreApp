@@ -153,8 +153,91 @@ exports.getKakeiboUpdate = function(docData) {
     return update;
 }
 
+exports.loggerString = (log1, log2 = "", log3 = "", log4 = "") => {
+    const d = new Date();
+    return [d, JSON.stringify(log1), JSON.stringify(log2), JSON.stringify(log3), JSON.stringify(log4)].join(" ")
+}
+
+exports.loggerConsole = (log1, log2 = "", log3 = "", log4 = "") => {
+    console.log(exports.loggerString(log1, log2, log3, log4));
+}
+
+exports.loggerBatchGenerator = function() {
+    let log = ""
+    return function(log1, log2 = "", log3 = "", log4 = "") {
+        log += exports.loggerString(log1, log2, log3, log4) + "\n";
+        return log;
+    }
+}
+
+// update row by row calculation
+exports.updateKakeiboDB = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+    const updates = [];
+    // add/update extra columns
+    logger("start")
+    let ss= await kakeiboDB.collection(collectionName).get();
+    logger("got snapshot "+ss.size)
+    const docs = ss.docs;
+    for(let i=0; i<docs.length; i++) {
+        const doc = docs[i];
+        const dd = doc.data();
+        //result.log.push(dd)
+        const ud = exports.getKakeiboUpdate(dd);
+        if( dd.ID === undefined ) {
+            //console.log(ud.ID, doc.id)
+            ud.ID = doc.id
+        }
+        if( ud.ID || dd.income !== ud.income || dd.outgo !== ud.outgo || dd.shusi !== ud.shusi || dd.account !== ud.account || dd.account_add !== ud.account_add || dd.account_sub !== ud.account_sub || dd.category_FPlan !== ud.category_FPlan ) {                
+            const p = doc.ref.update(ud);
+            updates.push(p)
+            //logger(ud, dd);
+        }
+    }
+    logger("updates submitted: "+updates.length);
+    return updates;
+}
+
+
+exports.updateKakeiboAccum = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+    logger("start")
+    const updates = [];
+    // add/update extra columns
+    const ss = await kakeiboDB.collection(collectionName).orderBy("date").orderBy("ID").get();
+    logger("got snapshot "+ss.size)
+    const docs = ss.docs;
+    const accum = {}
+    for(let i=0; i<docs.length; i++) {
+        const doc = docs[i]
+        const data = doc.data();
+        const updateData = {}
+        // accum
+        const aadd = data["account_add"]
+        const asub = data["account_sub"]
+        accum[aadd] = (accum[aadd] || 0) + data["shusi"];
+        if( asub ) {
+            accum[asub] = (accum[asub] || 0) - data["shusi"];
+        }
+        updateData.accum_add = accum[aadd];
+        updateData.accum_sub = asub ? accum[asub] : null;
+        //console.log(updateData, data)
+        if( updateData.accum_add !== data["accum_add"] || updateData.accum_sub !== data["accum_sub"] ) {
+            const p = doc.ref.update(updateData);
+            //console.log(updateData, data)
+            updates.push(p)
+        }
+    }
+    logger("updates submitted: "+updates.length);
+    return updates;
+}
+
+
+// update DB and Accum
 exports.recalculateDB = async function(kakeiboDB, collectionName) {
+    function putlog(v) { 
+        console.log(v) 
+    }
     const snapshot = await kakeiboDB.collection(collectionName).orderBy("date").orderBy("ID").get();
+    putlog(snapshot.size)
     const docs = snapshot.docs;
     const plist = [];
     const accum = {}
@@ -165,24 +248,58 @@ exports.recalculateDB = async function(kakeiboDB, collectionName) {
         const updateData = {}
         // account_add, etc.
         const dd = data;
-        const ud = getKakeiboUpdate(dd);
+        const ud = exports.getKakeiboUpdate(dd);
         if( dd.income !== ud.income || dd.outgo !== ud.outgo || dd.shusi !== ud.shusi || dd.account !== ud.account || dd.account_add !== ud.account_add || dd.account_sub !== ud.account_sub || dd.category_FPlan !== ud.category_FPlan ) {                
             updateData = ud;
         }
         // accum
         const aadd = data["account_add"]
         const asub = data["account_sub"]
-        accum[aadd] = (accum[aadd] || 0) + data["shusi"];
+        accum[aadd] = (accum[aadd] || 0) + ud["shusi"];
         if( asub ) {
-            accum[asub] = (accum[asub] || 0) - data["shusi"];
+            accum[asub] = (accum[asub] || 0) - ud["shusi"];
         }
         updateData.accum_add = accum[aadd];
         updateData.accum_sub = asub ? accum[asub] : null;
         const p = doc.ref.update(updateData);
+        //console.log(updateData)
         plist.push(p)
     }
+    putlog(plist.length)
     return Promise.all(plist);
 }
+
+// created new, not fully tested... 
+exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+    logger("start")
+    const updates = [];
+    // add/update extra columns
+    const ss = await kakeiboDB.collection(collectionName).limit(40000).get();
+    logger("got snapshot "+ss.size)
+
+    const docs = ss.docs;
+    let zandaka = {};
+    for(let i=0; i<docs.length; i++) {
+        const doc = docs[i]
+        const data = doc.data();
+        // zandaka
+        zandaka[data.account_add] = (zandaka[data.account_add] || 0) + (data.shusi);
+        if( data.account_sub ) {
+            zandaka[data.account_sub] = (zandaka[data.account_sub] || 0) - (data.shusi);
+        }
+    }
+    //logger(zandaka);
+    logger("zandaka calculated")
+
+    // delete and add zandaka    
+    await exports.deleteCollection(kakeiboDB, "kakeibo_zandaka");
+    logger("delete zandaka")
+    const coll = kakeiboDB.collection('kakeibo_zandaka');
+    const p = await Promise.all(Object.keys(zandaka).map((a)=>(coll.add({account:a, zandaka:zandaka[a]}))))
+    logger("added zandaka")
+    return p;
+};
+
 
 exports.updateSummary = async (db, kakeiboCollectionName, summaryCollectionName, key1, key2, day1, dayWidth = 4) => {
     const result = {log:[]}

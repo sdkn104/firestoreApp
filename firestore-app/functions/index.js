@@ -14,6 +14,29 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 });
 
 
+exports.updateKakeiboZandaka = functions
+    .runWith({
+        timeoutSeconds: 120,
+        memory: '1GB'
+    }).https.onRequest(async (req, res) => {
+        const result = {log:[]}
+        let ps;
+        try {
+            const logger = myKakeibo.loggerBatchGenerator()
+            ps = await myKakeibo.updateKakeiboZandaka(admin.firestore(), "kakeibo", logger);
+            logger("finished: "+new Date());
+            result.log.push(logger(""))
+        } catch(e) {
+            result.errmes = e.message;
+            result.error = e;
+            result.stack = e.stack;
+        } finally {
+            res.json(result);
+            return ps;
+        }
+});
+
+/* This version is old but matured ....
 exports.updateKakeiboZandaka = functions.https.onRequest(async (req, res) => {
     // Grab the text parameter.
     const original = req.query.text;
@@ -52,107 +75,75 @@ exports.updateKakeiboZandaka = functions.https.onRequest(async (req, res) => {
         res.json(result);
     }
 });
+*/
 
-
-exports.updateKakeiboSummary = functions.https.onRequest(async (req, res) => {
-    const result = {log:[]}
-    try {
-        myKakeibo.updateSummary(admin.firestore(), "kakeibo", "kakeibo_summary", "category_FPlan", "himoku", "date", 4);
-        result.log.push("finish subit summary creation")
-    } catch(e) {
-        result.errmes = e.message;
-        result.error = e;
-        result.stack = e.stack;
-    } finally {
-        res.json(result);
-    }
-});
-
-
-
-exports.updateKakeiboDB = functions.https.onRequest(async (req, res) => {
-    // Grab the text parameter.
-    const original = req.query.text;
-    const result = {log:[]}
-    try {
-        // add/update extra columns
-        let ss= await admin.firestore().collection("kakeibo").limit(40000).get();
-        result.log.push(ss.size)
-        result.log.push(Date())
-        let updateCount = 0
-        const docs = ss.docs;
-        for(let i=0; i<docs.length; i++) {
-            const doc = docs[i];
-            const dd = doc.data();
-            //result.log.push(dd)
-            const ud = myKakeibo.getKakeiboUpdate(dd);
-            if( dd.income !== ud.income || dd.outgo !== ud.outgo || dd.shusi !== ud.shusi || dd.account !== ud.account || dd.account_add !== ud.account_add || dd.account_sub !== ud.account_sub || dd.category_FPlan !== ud.category_FPlan ) {                
-                doc.ref.update(ud);
-                updateCount++;
-                //result.log.push(ud)
+exports.updateKakeiboSummary = functions
+    .runWith({
+        timeoutSeconds: 120,
+        memory: '1GB'
+    }).https.onRequest(async (req, res) => {
+        const result = {log:[]}
+        let ps;
+        try {
+            ps = await myKakeibo.updateSummary(admin.firestore(), "kakeibo", "kakeibo_summary", "category_FPlan", "himoku", "date", 4);
+            result.log.push("finish subit summary creation")
+        } catch(e) {
+            result.errmes = e.message;
+            result.error = e;
+            result.stack = e.stack;
+        } finally {
+            res.json(result);
+            return ps;
         }
-        }//);
-        result.updates = updateCount;
-        result.log.push(Date() + " finished")
-    } catch(e) {
-        result.errmes = e.message;
-        result.error = e;
-        result.stack = e.stack;
-    } finally {
-        res.json(result);
-    }
 });
 
 
-exports.updateKakeiboAccum = functions.https.onRequest(async (req, res) => {
-    const result = {log:[]}
-    try {
-        result.log.push(Date()+" start")
-        let snapShot = await admin.firestore().collection('kakeibo').orderBy("date").orderBy("ID").limit(100000).get();
-        result.log.push(snapShot.size);
-        result.log.push(Date())
-        const accum = {}
-        let updateCount = 0;
-        const updates = [];
-        snapShot.forEach((doc)=>{
-            const data = doc.data();
-            // calculate accum
-            const ud = {}
-            const aadd = data["account_add"]
-            const asub = data["account_sub"]
-            accum[aadd] = (accum[aadd] || 0) + data["shusi"];
-            if( asub ) {
-                accum[asub] = (accum[asub] || 0) - data["shusi"];
-            }
-            // update accum
-            if( accum[aadd] !== data["accum_add"] ) {
-                ud.accum_add = accum[aadd];
-            }
-            if( asub && accum[asub] !== data["accum_sub"] ) {
-                ud.accum_sub = accum[asub];
-            }
-            if( !asub && data["accum_sub"] !== null ) {
-                ud.accum_sub = null;
-            }
-            // update
-            if( Object.keys(ud).length > 0 ) {                
-                const u = doc.ref.update(ud);
-                updates.push(u);
-                updateCount++;
-                //result.log.push(ud)
-            }           
-        });
-        result.log.push(Date()+" updates submitted")
-        result.updates = updateCount;
-        //await Promise.all(updates);
-        //result.log.push(Date()+" updates finished")
-    } catch(e) {
-        result.errmes = e.message;
-        result.error = e;
-        result.stack = e.stack;
-    } finally {
-        res.json(result);
-    }
+
+exports.updateKakeiboDB = functions
+    .runWith({
+            timeoutSeconds: 120,
+            memory: '1GB'
+    }).https.onRequest(async (req, res) => {
+        // Grab the text parameter.
+        const original = req.query.text;
+        const result = {log:[]}
+        let ps;
+        try {
+            const logger = myKakeibo.loggerBatchGenerator()
+            ps = await myKakeibo.updateKakeiboDB(admin.firestore(), "kakeibo", logger);
+            logger("finished: "+new Date());
+            result.log.push(logger(""))
+        } catch(e) {
+            result.errmes = e.message;
+            result.error = e;
+            result.stack = e.stack;
+        } finally {
+            res.json(result);
+            return ps;
+        }
+});
+
+
+exports.updateKakeiboAccum = functions
+    .runWith({
+        timeoutSeconds: 120,
+        memory: '1GB'
+    }).https.onRequest(async (req, res) => {
+        const result = {log:[]}
+        let ps;
+        try {
+            const logger = myKakeibo.loggerBatchGenerator()
+            ps = await myKakeibo.updateKakeiboAccum(admin.firestore(), "kakeibo", logger);
+            logger("finished: "+new Date());
+            result.log.push(logger(""))
+        } catch(e) {
+            result.errmes = e.message;
+            result.error = e;
+            result.stack = e.stack;
+        } finally {
+            res.json(result);
+            return ps;
+        }
 });
 
 

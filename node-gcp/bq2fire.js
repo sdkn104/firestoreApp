@@ -56,25 +56,19 @@ const firebaseConfig = {
     //await Promise.all(rows.map((row)=>(coll.add(row))))
     
     // modify kakeibo
-    /*
-    const ss2 = await db.collection("kakeibo").orderBy("date").orderBy("ID").limit(40000).get();
+    
+    const ss2 = await db.collection("kakeibo").limit(40000).get();
     console.log(ss2.size)
     let updateCount = 0
     const accum = {}
     for( const doc of ss2.docs) {
         const dd = doc.data();
-        doc.ref.update({accum1: FieldValue.delete(), accum2: FieldValue.delete()}) // delete field
-
+        //doc.ref.update({accum1: FieldValue.delete(), accum2: FieldValue.delete()}) // delete field
+        //console.log(dd.date)
+        //doc.ref.delete()
     }
     console.log(updateCount);
-    */
-
-    // update kakeibo
-    /*const ps = myKakeibo.recalculateDB(db, "kakeibo");
-    console.log(Date()+" submited recalculation")
-    await ps;
-    console.log(Date()+"finish recalculation")
-    */
+    
     
     // copy collection
     /*
@@ -85,10 +79,10 @@ const firebaseConfig = {
     */
 
     // create summary
-    const r = await myKakeibo.updateSummary(db, "kakeibo", "kakeibo_himoku", "himoku", "utiwake", "date", 0);
-    console.log("finish creating sumamry", r.log, r.error)
-    const r2 = await myKakeibo.updateSummary(db, "kakeibo", "kakeibo_summary", "category_FPlan", "himoku", "date", 7);
-    console.log("finish creating sumamry", r2.log, r2.error)
+    //const r = await myKakeibo.updateSummary(db, "kakeibo", "kakeibo_himoku", "himoku", "utiwake", "date", 0);
+    //console.log("finish creating sumamry", r.log, r.error)
+    //const r2 = await myKakeibo.updateSummary(db, "kakeibo", "kakeibo_summary", "category_FPlan", "himoku", "date", 7);
+    //console.log("finish creating sumamry", r2.log, r2.error)
 })();
 
 
