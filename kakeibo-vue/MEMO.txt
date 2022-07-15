@@ -1,0 +1,19 @@
+INSTALL ENV
+- install node and npm
+> //npm install -g vue  (vue2)  // not required, vue cli includes vue???
+> npm install -g @vue/cli  
+> vue create vue-proj   // specifying vue2 default
+> cd vue-proj
+> npm install firebase@8  
+- add the followings to vue.config.js
+module.exports = defineConfig({
+  transpileDependencies: true,
+  publicPath: '',
+})
+
+RUN/BUILD
+> cd vue-proj
+> // npm run lint
+> // npm run serve
+> npm run build  // compile ./public and ./src  into ./dist
+> cp -rf ./dist web-server-static-folder/vue_kakeibo
