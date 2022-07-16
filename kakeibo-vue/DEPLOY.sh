@@ -1,4 +1,7 @@
-#!/bin/bash -c
+#!/bin/bash -x
 
 npm run build
-cp -rf dist ~/AppEngineNode/static/kakeibo_vue
+
+dst=~/AppEngineNode/static/kakeibo_vue
+
+cp -rf dist $dst

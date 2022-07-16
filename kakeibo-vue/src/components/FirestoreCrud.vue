@@ -108,8 +108,12 @@
     import Vue from 'vue'
 
 
-    import firebase from '../firestore.js'
+    import {db} from '../firestore.js'
+    import { collection, doc, setDoc, addDoc, query, where, limit, getDocs, deleteDoc } from "firebase/firestore";
+    import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 
+    const auth = getAuth()
+    
 /*
     import firebase from 'firebase/app';
     import 'firebase/firestore';
@@ -205,7 +209,7 @@
             console.log("mounted this = ", this)
             const that = this;
             // init auth
-            firebase.auth().onAuthStateChanged(function(user) {
+            onAuthStateChanged(auth, function(user) {
                 if (user) {
                     console.log('login now', user?.displayName);
                     that.currentUser = user;
@@ -228,8 +232,8 @@
     // ----- login / logout
                     
     function onclick_login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(result => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).then(result => {
             const user = result.user
             console.log("login success, user = ", user)
             this.currentUser = user;
@@ -240,7 +244,7 @@
         })
     }
     function onclick_logout() {
-        firebase.auth().signOut().then(() => {
+        auth.signOut().then(() => {
             console.log("logout success")
             this.currentUser = null;
         }).catch(function(err) {
@@ -285,12 +289,12 @@
         const conditionEqual = Object.entries(vueapp.searchCondition).filter((e)=>(e[1][0] !== "" && e[1][1] === ""))
         const conditionUnEqual = Object.entries(vueapp.searchCondition).filter((e)=>(e[1][0] !== "" && e[1][1] !== ""))
         const conditionRegExp = Object.entries(vueapp.searchCondition).filter((e)=>(e[1][0] === "" && e[1][1] !== ""))
-        let coll = firebase.firestore().collection(collectionName).limit(firestoreQueryLimit); // limit for preventing error lock
+        let q = query(collection(db, collectionName), limit(firestoreQueryLimit)); // limit for preventing error lock
         // set server-side filtering
         conditionEqual.forEach((e)=>{
             const k = e[0]
             const v = e[1]
-            coll = coll.where(k, "==", v[0] );
+            q = query(q, where(k, "==", v[0] ));
             console.log("add db filter condition: " + k + " == " + v[0])
         });
         if( conditionEqual.length === 0 ) {
@@ -304,12 +308,12 @@
                 }
                 console.log(typeof lower)
                 console.log(typeof upper)
-                coll = coll.where(p[0], ">=", lower ).where(p[0], "<=", upper );
+                q = query(q, where(p[0], ">=", lower ), where(p[0], "<=", upper ));
                 console.log("add db filter condition: unequal for " + p[0])
             }
         }
         // query
-        const querySnapshot = await coll.get();
+        const querySnapshot = await getDocs(q);
         let docs = querySnapshot.docs.map((d)=>({docid:d.id, data:d.data()}));
         // create doc list
         const docList = [];
@@ -370,15 +374,15 @@
         const docid = this.docList[index].docid;
         alert("delete this item ?")
         this.docList.splice(index, 1);
-        firebase.firestore().collection(this.collectionName).doc(docid).delete();
+        deleteDoc(doc(db, this.collectionName, docid));
     }
 
     async function onclick_submit(){
         const obj = this.detailView.data;
         if( this.detailView.docid ) { // edit
-            await firebase.firestore().collection(this.collectionName).doc(this.detailView.docid).set(obj);
+            await setDoc(doc(db, this.collectionName, this.detailView.docid), obj);
         } else { // add
-            await firebase.firestore().collection(this.collectionName).add(obj);
+            await addDoc(doc(db, this.collectionName, obj));
         }
         onclick_search();
         this.detailView = {};
@@ -470,9 +474,9 @@
         return update;
     }
 
-    // eslint-disable-next-line
-    async function deleteCollection(db, collectionName) {
-        const snapshot = await db.collection(collectionName).get();
+    /*
+    async function deleteCollection(db, collectionName) {///not adjust to v9
+        const snapshot = await getDocs(collection(db, collectionName));
         const docs = snapshot.docs;
         console.log(docs.length)
         let batch = db.batch();
@@ -488,7 +492,7 @@
         await batch.commit();
         console.log("delete commit")
     }
-
+*/
     // Import the functions you need from the SDKs you need
     //import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     //import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";

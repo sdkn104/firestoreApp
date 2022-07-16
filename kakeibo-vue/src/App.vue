@@ -12,7 +12,8 @@
 
     import FirestoreCrud from './components/FirestoreCrud.vue'
 
-    import firebase from './firestore.js'
+    import {db} from './firestore.js'
+    import { collection, query, limit, getDocs  } from "firebase/firestore";
 
 /*
     import firebase from 'firebase/app';
@@ -149,8 +150,8 @@
     // ------ get docs used in getOptions_himoku
 
     function get_docs(collectionName) {
-        const coll = firebase.firestore().collection(collectionName).limit(firestoreQueryLimit);
-        return coll.get().then((ss)=>(ss.docs));
+        const q = query(collection(db, collectionName), limit(firestoreQueryLimit));
+        return getDocs(q).then((ss)=>(ss.docs));
     }
     function get_docdata(collectionName) {
         return get_docs(collectionName).then((docs)=>(docs.map((d)=>(d.data()))));

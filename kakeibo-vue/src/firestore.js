@@ -1,10 +1,17 @@
-
+/*
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-
 import 'firebase/auth';
+*/
 
-// ---- Configs ------
+import { initializeApp, getApps } from "firebase/app";
+//import { getAnalytics } from "firebase/analytics";
+import { initializeFirestore } from 'firebase/firestore'
+//import { getFirestore } from 'firebase/firestore'
+
+let firebaseApp;
+let db;
+
 const firebaseConfig = {
     apiKey: "AIzaSyAzC5upkkaduxsYhkGqukXGItb_x00gjcY",
     authDomain: "fresh-catwalk-335010.firebaseapp.com",
@@ -16,6 +23,18 @@ const firebaseConfig = {
 }
 const firebaseSettings = { timestampsInSnapshots: true }
 
+if (typeof window !== "undefined" && !getApps().length) {//?
+  firebaseApp = initializeApp(firebaseConfig);
+  //db = getFirestore(firebaseApp)
+  db = initializeFirestore(firebaseApp, firebaseSettings);
+}
+
+//export { firebaseApp, auth, firestore };
+export { db };
+
+/*
+const firebaseSettings = { timestampsInSnapshots: true }
+
 // Initialize Firebase
 if (firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
@@ -25,3 +44,4 @@ firebase.firestore().settings(firebaseSettings);
     
 
 export default firebase
+*/
