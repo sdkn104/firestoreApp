@@ -20,10 +20,12 @@ exports.updateKakeiboZandaka = functions
         memory: '1GB'
     }).https.onRequest(async (req, res) => {
         const result = {log:[]}
+        const at = req.query.at;
+        result.at = at;
         let ps;
         try {
             const logger = myKakeibo.loggerBatchGenerator()
-            ps = await myKakeibo.updateKakeiboZandaka(admin.firestore(), "kakeibo", logger);
+            ps = await myKakeibo.updateKakeiboZandaka(admin.firestore(), "kakeibo", at, logger);
             logger("finished: "+new Date());
             result.log.push(logger(""))
         } catch(e) {
@@ -31,7 +33,9 @@ exports.updateKakeiboZandaka = functions
             result.error = e;
             result.stack = e.stack;
         } finally {
-            res.json(result);
+            res.set('Content-Type', 'text/plain')
+            res.send(JSON.stringify(result, null, 2) + "\nlog:\n" + result.log)
+            //res.json(result);
             return ps;
         }
 });
@@ -92,7 +96,8 @@ exports.updateKakeiboSummary = functions
             result.error = e;
             result.stack = e.stack;
         } finally {
-            res.json(result);
+            res.set('Content-Type', 'text/plain')
+            res.send(JSON.stringify(result, null, 2) + "\nlog:\n" + result.log)
             return ps;
         }
 });
@@ -118,7 +123,8 @@ exports.updateKakeiboDB = functions
             result.error = e;
             result.stack = e.stack;
         } finally {
-            res.json(result);
+            res.set('Content-Type', 'text/plain')
+            res.send(JSON.stringify(result, null, 2) + "\nlog:\n" + result.log)
             return ps;
         }
 });
@@ -141,7 +147,8 @@ exports.updateKakeiboAccum = functions
             result.error = e;
             result.stack = e.stack;
         } finally {
-            res.json(result);
+            res.set('Content-Type', 'text/plain')
+            res.send(JSON.stringify(result, null, 2) + "\nlog:\n" + result.log)
             return ps;
         }
 });

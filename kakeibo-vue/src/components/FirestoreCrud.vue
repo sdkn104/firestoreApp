@@ -1,3 +1,12 @@
+<!--- 
+    Component FirestoreCrud
+
+    installation
+
+    usage
+
+--->
+
 
 <template>
 
@@ -107,8 +116,7 @@
 <script>
     import Vue from 'vue'
 
-
-    import {db} from '../firestore.js'
+    import {db} from '@/config/firebase.js'  // @ is the project home of webpack
     import { collection, doc, setDoc, addDoc, query, where, limit, getDocs, deleteDoc } from "firebase/firestore";
     import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 
@@ -284,7 +292,7 @@
         this.displayConditionForm = true; 
     }
 
-    // used in sourceList[].source() 
+    // 
     async function get_search_docdata(collectionName, vueapp) {
         const conditionEqual = Object.entries(vueapp.searchCondition).filter((e)=>(e[1][0] !== "" && e[1][1] === ""))
         const conditionUnEqual = Object.entries(vueapp.searchCondition).filter((e)=>(e[1][0] !== "" && e[1][1] !== ""))
@@ -410,130 +418,11 @@
         }
     }
 
-    // eslint-disable-next-line
-    function getKakeiboUpdate(docData) {
-        const update = {};
-        
-        //update.date = PARSE_DATETIME("%Y/%m/%d", DATE);
-        update.income = docData.income ? Number(docData.income) : 0;
-        update.outgo = docData.outgo ? Number(docData.outgo) : 0;
-        update.shusi = update.income - update.outgo;
-        update.account = docData.account ? docData.account : '現金';
-        update.account_add = docData.account ? docData.account : '現金';
-        update.account_sub =  docData.himoku === '預金引き出し' ? '現金' :
-                                docData.himoku === '預金預け入れ' ? '現金' :
-                                docData.himoku === '口座間振替' ? docData.utiwake :
-                                null ;
-        update.category_FPlan = null;
-        update.account_all = update.account_add + (update.account_sub ? update.account_sub : '');
-        update.category_FPlan = 
-            docData.mark?.match('%特別会計%') ? '11特別会計' :
-            docData.mark?.match('%一時会計%') ? '04一時会計《年単位》' :
-            docData.himoku === '車関連費' && docData.utiwake === '自動車税' ? '03固定支出《毎年》' :
-            docData.himoku === '住居費' && docData.utiwake === '固都税' ? '03固定支出《毎年》' :
-            docData.himoku === '交通通信費' && docData.utiwake === 'ＮＨＫ受信料' ? '03固定支出《毎年》' :
-            docData.himoku === '保険料' && docData.utiwake === '生命保険料' ? '03固定支出《毎年》' :
-            docData.himoku === '預金引き出し' ? '20振替' :
-            docData.himoku === '預金預け入れ' ? '20振替' :
-            docData.himoku === '口座間振替' ? '20振替' :
-            docData.himoku === '特別収入' && docData.utiwake === '出張旅費精算' ? '06出張通勤会計' :
-            docData.himoku === '特別収入' && docData.utiwake === '通勤費補助' ? '06出張通勤会計' :
-            docData.himoku === '特別収入' && docData.utiwake === '投資利益' ? '07投資会計' :
-            docData.himoku === '特別支出' && docData.utiwake === '通勤《バス》' ? '06出張通勤会計' :
-            docData.himoku === '特別支出' && docData.utiwake === '通勤《電車》' ? '06出張通勤会計' :
-            docData.himoku === '特別支出' && docData.utiwake === '通勤《駐輪》' ? '06出張通勤会計' :
-            docData.himoku === '特別支出' && docData.utiwake === '出張費' ? '06出張通勤会計' :
-            docData.himoku === '特別支出' && docData.utiwake === '投資損失' ? '07投資会計' :
-            docData.himoku === '住居費' && docData.utiwake === '銀行１融資' ? '05住宅ローン' :
-            docData.himoku === '保険料' && docData.utiwake === '個人年金' ? '05貯蓄性支出' :
-            docData.himoku === '教養・娯楽費' && docData.utiwake === '新聞' ? '01固定支出《毎月》' :
-            docData.himoku === '交通通信費' && docData.utiwake === 'CATV' ? '01固定支出《毎月》' :
-            docData.himoku === '交通通信費' && docData.utiwake === '電話料《NTT》' ? '01固定支出《毎月》' :
-            docData.himoku === '交通通信費' && docData.utiwake === '電話料《携帯》' ? '01固定支出《毎月》' :
-            docData.himoku === '交通通信費' && docData.utiwake === 'internet' ? '01固定支出《毎月》' :
-            docData.himoku === 'こども' && docData.utiwake === '授業料' ? '01固定支出《毎月》' :
-            docData.himoku === 'こども' && docData.utiwake === '習い事月謝' ? '01固定支出《毎月》' :
-            //docData.himoku === '雑費' & docData.utiwake === '香へ' ? '00香へ' :
-            docData.himoku === '給与・賞与' ? '10収入' :
-            docData.himoku === '雑収入' ? '10収入' :
-            docData.himoku === '贈答《受》' ? '10収入' :
-            docData.himoku === '出所不明金' ? '10収入' :
-            docData.himoku === '特別収入' ? '11特別会計' :
-            docData.himoku === '保険料' ? '01固定支出《毎月》' :
-            docData.himoku === '車関係費' ? '01固定支出《毎月》' :
-            docData.himoku === '住居費' ? '01固定支出《毎月》' :
-            docData.himoku === '特別支出' ? '11特別会計' :
-            docData.himoku === '税金' ? '08給与賞与控除' :
-            docData.himoku === '社会保険料' ? '08給与賞与控除' :
-            docData.himoku === '会費' ? '08給与賞与控除' :
-            docData.himoku === '預金引き出し' ? '20振替' :
-            docData.himoku === '預金預け入れ' ? '20振替' :
-            docData.himoku === '口座間振替' ? '20振替' :
-            docData.himoku === '水道光熱費' ? '01固定支出《毎月》' :
-            '00基本生活費';
-        return update;
-    }
-
-    /*
-    async function deleteCollection(db, collectionName) {///not adjust to v9
-        const snapshot = await getDocs(collection(db, collectionName));
-        const docs = snapshot.docs;
-        console.log(docs.length)
-        let batch = db.batch();
-        for(let i=0; i < docs.length; i++) {
-            //console.log("del ", docs[i].data())
-            batch.delete(docs[i].ref);
-            if( (i+1) % 500 === 0 ) {
-                await batch.commit();
-                console.log("delete commit")
-                batch = db.batch();
-            }
-        }
-        await batch.commit();
-        console.log("delete commit")
-    }
-*/
-    // Import the functions you need from the SDKs you need
-    //import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    //import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-    
-
-    /*
-    const db = firebase.firestore();
-    db.collection(this.collectionName).doc("mydoc").set({
-        name: "Tokyo",
-        state: "x",
-        country: "JP"
-    })
-    .then(function() {
-        console.log("Document successfully written!");
-    })
-    .catch(function(error) {
-        console.error("Error writing document: ", error);
-    });
-
-    const coll = db.collection(this.collectionName);
-    console.log(coll);
-    
-    const docRef = coll.doc("mydoc");
-    console.log(docRef)
-    docRef.get().then((doc) => {
-        if (doc.exists) {
-            console.log("Document data:", doc.data());
-        }
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-    */
 
 </script>
 
 
-
-
-  <style>
+<style>
     .panel { 
           padding: 30px; margin:5px; border:solid 1px black; 
     }
@@ -543,5 +432,5 @@
         background-color: lightgray;
     }
 
-  </style>
+</style>
 

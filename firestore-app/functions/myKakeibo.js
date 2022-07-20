@@ -267,10 +267,17 @@ exports.recalculateDB = async function(kakeiboDB, collectionName) {
     return Promise.all(plist);
 }
 
-exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, at = null, logger = exports.loggerConsole) => {
     const updates = [];
     // add/update extra columns
-    const ss = await kakeiboDB.collection(collectionName).limit(40000).get();
+    let q = kakeiboDB.collection(collectionName);
+    if( at ) {
+        q = q.where("date", "<=", at);
+        logger("zandaka at = " & at)
+    } else {
+        logger("zandaka at = null")
+    }
+    const ss = await q.limit(40000).get();
     logger("got snapshot "+ss.size)
 
     const docs = ss.docs;

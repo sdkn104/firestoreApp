@@ -174,7 +174,6 @@ exports.loggerBatchGenerator = function() {
 exports.updateKakeiboDB = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
     const updates = [];
     // add/update extra columns
-    logger("start")
     let ss= await kakeiboDB.collection(collectionName).get();
     logger("got snapshot "+ss.size)
     const docs = ss.docs;
@@ -199,7 +198,6 @@ exports.updateKakeiboDB = async (kakeiboDB, collectionName, logger = exports.log
 
 
 exports.updateKakeiboAccum = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
-    logger("start")
     const updates = [];
     // add/update extra columns
     const ss = await kakeiboDB.collection(collectionName).orderBy("date").orderBy("ID").get();
@@ -269,12 +267,14 @@ exports.recalculateDB = async function(kakeiboDB, collectionName) {
     return Promise.all(plist);
 }
 
-// created new, not fully tested... 
-exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
-    logger("start")
+exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, at = null, logger = exports.loggerConsole) => {
     const updates = [];
     // add/update extra columns
-    const ss = await kakeiboDB.collection(collectionName).limit(40000).get();
+    let q = kakeiboDB.collection(collectionName);
+    if( at ) {
+        q = q.where("date", "<=", at);
+    }
+    const ss = await q.limit(40000).get();
     logger("got snapshot "+ss.size)
 
     const docs = ss.docs;

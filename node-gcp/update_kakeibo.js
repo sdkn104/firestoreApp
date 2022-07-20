@@ -48,7 +48,7 @@ const firebaseConfig = {
 
     // update kakeibo zandaka
     const logger3 = myKakeibo.loggerBatchGenerator()
-    const ps3 = myKakeibo.updateKakeiboZandaka(db, "kakeibo", logger3);
+    const ps3 = myKakeibo.updateKakeiboZandaka(db, "kakeibo", null, logger3);
     console.log(Date()+" submited update Zandaka")
     await ps3;
     console.log(logger3(""))
