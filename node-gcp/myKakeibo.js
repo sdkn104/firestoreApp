@@ -93,6 +93,8 @@ exports.batcher2 = function(db) {
 exports.getKakeiboUpdate = function(docData) {
     const update = {};
     
+
+
     //update.date = PARSE_DATETIME("%Y/%m/%d", DATE);
     update.income = docData.income ? Number(docData.income) : 0;
     update.outgo = docData.outgo ? Number(docData.outgo) : 0;
@@ -182,11 +184,27 @@ exports.updateKakeiboDB = async (kakeiboDB, collectionName, logger = exports.log
         const dd = doc.data();
         //result.log.push(dd)
         const ud = exports.getKakeiboUpdate(dd);
+
+        let mustUpdate = false
         if( dd.ID === undefined ) {
             //console.log(ud.ID, doc.id)
             ud.ID = doc.id
+            mustUpdate = true
         }
-        if( ud.ID || dd.income !== ud.income || dd.outgo !== ud.outgo || dd.shusi !== ud.shusi || dd.account !== ud.account || dd.account_add !== ud.account_add || dd.account_sub !== ud.account_sub || dd.category_FPlan !== ud.category_FPlan ) {                
+        ["mark", "biko", "himoku", "utiwake", "date" ].forEach((key)=>{
+            if( ! dd.hasOwnProperty(key) ) {
+                ud[key] = ""
+                mustUpdate = true
+            }
+        })
+        Object.keys(ud).forEach((key)=>{
+            if( dd[key] !== ud[key] ) {
+                mustUpdate = true
+            }
+        })
+
+        //if( mustUpdate || dd.income !== ud.income || dd.outgo !== ud.outgo || dd.shusi !== ud.shusi || dd.account !== ud.account || dd.account_add !== ud.account_add || dd.account_sub !== ud.account_sub || dd.account_all !== ud.account_all || dd.category_FPlan !== ud.category_FPlan ) {                
+        if( mustUpdate ) {
             const p = doc.ref.update(ud);
             updates.push(p)
             //logger(ud, dd);
@@ -346,6 +364,39 @@ exports.updateSummary = async (db, kakeiboCollectionName, summaryCollectionName,
     result.log.push(Date()+ " added summary: "+dataList.length)
     result.log.push("*** job has been sumitted to background...")
     return Promise.all(dataList.map((a)=>(coll2.add(a))))
+};
+
+exports.guessHimokuGetKey = (data) => {
+    function zenkaku2hankaku(str) { // 英数字のみ
+        return str?.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+            return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+        });
+    }
+    return zenkaku2hankaku(data.biko)?.replace(/[0-9]/g, "")?.replace(/ nan/g,"")?.replace(/^##/,"")?.replace(/[　 ]*/g, " ")?.trim();
+}
+
+exports.guessHimoku = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+
+    const updates = [];
+    let q = kakeiboDB.collection(collectionName).orderBy("date");
+    const ss = await q.limit(40000).get();
+    logger("got snapshot "+ss.size)    
+
+    const docs = ss.docs;
+    let guess = {};
+    docs.filter((doc)=>(doc.data().biko && doc.data().himoku && doc.data().utiwake && doc.data().account && doc.data().account !== "現金")).forEach((doc)=>{
+        const data = doc.data();
+        const key = exports.guessHimokuGetKey(data)
+        if(guess[key]) {
+            if( guess[key].latest < data.date ) {
+                guess[key] = {latest: data.date, himoku: data.himoku, utiwake:data.utiwake }
+            }
+        } else {
+            guess[key] = {latest: data.date, himoku: data.himoku, utiwake:data.utiwake }
+        }
+    })
+    //logger(zandaka);
+    return guess;
 };
 
 

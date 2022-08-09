@@ -182,7 +182,7 @@
                 onclick_login: onclick_login,
                 onclick_logout: onclick_logout,
                 onclick_condition: onclick_condition,
-                onclick_search: onclick_search,
+                onclick_search: function(){onclick_search(this)},
                 onclick_add: onclick_add,
                 onclick_edit: onclick_edit,
                 onclick_delete: onclick_delete,
@@ -349,18 +349,19 @@
         return docList;
     }
 
-    async function onclick_search() {
-        console.log("searching by condition", this.searchCondition)
-        this.message = "processing..."
-        console.log(this)
+    async function onclick_search(that1 = null) {
+        const that = that1 || this
+        console.log("searching by condition", that.searchCondition)
+        that.message = "processing..."
+        console.log(that)
         try {
-            const docList = await get_search_docdata(this.sourceName, this);
-            this.docList = await this.sourceList[this.sourceName].sourceFilter(docList);
-            this.displayConditionForm = false;
+            const docList = await get_search_docdata(that.sourceName, that);
+            that.docList = await that.sourceList[that.sourceName].sourceFilter(docList);
+            that.displayConditionForm = false;
         } catch(error) {
             console.log("Error getting documents: ", error);
         } finally {
-            this.message = ""
+            that.message = ""
         }
     }
 
@@ -380,9 +381,18 @@
     function onclick_delete(index){
         console.log("delete "+index);
         const docid = this.docList[index].docid;
-        alert("delete this item ?")
-        this.docList.splice(index, 1);
-        deleteDoc(doc(db, this.collectionName, docid));
+
+        this.$bvModal.msgBoxConfirm('Are you sure to delete?')
+        .then(value => {
+                console.log(value)
+                if(value){
+                    this.docList.splice(index, 1);
+                    deleteDoc(doc(db, this.collectionName, docid));                    
+                }
+        })
+        .catch(err => {
+            alert(err)
+        })
     }
 
     async function onclick_submit(){
@@ -390,9 +400,9 @@
         if( this.detailView.docid ) { // edit
             await setDoc(doc(db, this.collectionName, this.detailView.docid), obj);
         } else { // add
-            await addDoc(doc(db, this.collectionName, obj));
+            await addDoc(collection(db, this.collectionName), obj);
         }
-        onclick_search();
+        onclick_search(this);
         this.detailView = {};
     } 
 

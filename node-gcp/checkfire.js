@@ -64,8 +64,12 @@ const myKakeibo = require('./myKakeibo.js');
             console.log("himoku", dd);
         }
         if( ! dd.date.match('^[0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]$') ) {
-            console.log("date", dd);
+            console.log("date illegal format", dd);
         }
+        if( ! dd.hasOwnProperty("mark") ) {
+            console.log("mark key not exists", dd);
+        }
+
 
         // calc ruikei        
         ruikei[ud.account_add] = (ruikei[ud.account_add] || 0) + (ud.shusi);
@@ -92,7 +96,7 @@ const myKakeibo = require('./myKakeibo.js');
         */
 
     });
-    console.log(ruikei);
+    //console.log(ruikei);
 
 
 })();
