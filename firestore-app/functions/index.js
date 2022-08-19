@@ -87,10 +87,22 @@ exports.updateKakeiboSummary = functions
         memory: '1GB'
     }).https.onRequest(async (req, res) => {
         const result = {log:[]}
+        const key1 = req.query.key1 || "category_FPlan";
+        const key2 = req.query.key2 || "himoku";
+        const day1 = req.query.day1 || "date";
+        const dayFrom = req.query.dayFrom || "1900/01/01";
+        const dayTo = req.query.dayTo || "2099/12/31";
+        const dayWidth = req.query.dayWidth || 4;
+        result.key1 = key1;
+        result.key2 = key2;
+        result.day1 = day1;
+        result.dayFrom = dayFrom;
+        result.dayTo = dayTo;
+        result.dayWidth = dayWidth;
         let ps;
         try {
-            ps = await myKakeibo.updateSummary(admin.firestore(), "kakeibo", "kakeibo_summary", "category_FPlan", "himoku", "date", 4);
-            result.log.push("finish subit summary creation")
+            ps = await myKakeibo.updateKakeiboSummary(admin.firestore(), "kakeibo", "kakeibo_summary", key1, key2, day1, dayFrom, dayTo, dayWidth);
+            result.log.push("finish submit summary creation")
         } catch(e) {
             result.errmes = e.message;
             result.error = e;
@@ -104,7 +116,7 @@ exports.updateKakeiboSummary = functions
 
 
 
-exports.updateKakeiboDB = functions
+exports.recalculateKakeiboDB = functions
     .runWith({
             timeoutSeconds: 120,
             memory: '1GB'
@@ -116,6 +128,7 @@ exports.updateKakeiboDB = functions
         try {
             const logger = myKakeibo.loggerBatchGenerator()
             ps = await myKakeibo.updateKakeiboDB(admin.firestore(), "kakeibo", logger);
+            ps = await myKakeibo.updateKakeiboAccum(admin.firestore(), "kakeibo", logger);
             logger("finished: "+new Date());
             result.log.push(logger(""))
         } catch(e) {

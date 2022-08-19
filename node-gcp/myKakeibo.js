@@ -319,7 +319,7 @@ exports.updateKakeiboZandaka = async (kakeiboDB, collectionName, at = null, logg
 };
 
 
-exports.updateSummary = async (db, kakeiboCollectionName, summaryCollectionName, key1, key2, day1, dayWidth = 4) => {
+exports.updateKakeiboSummary = async (db, kakeiboCollectionName, summaryCollectionName, key1, key2, day1, dayFrom = "1900/01/01", dayTo = "2099/12/31", dayWidth = 4) => {
     const result = {log:[]}
     result.log.push(Date()+" start")
     // caluculate zandaka and summary
@@ -329,22 +329,24 @@ exports.updateSummary = async (db, kakeiboCollectionName, summaryCollectionName,
     result.log.push(Date())
     snapShot.forEach((d)=>{
         const data = d.data();
-        // summary
-        const k1 = key1
-        const k2 = key2
-        const d1 = day1
-        const dw = dayWidth
-        if( ! summary[data[k1]] ) {
-            summary[data[k1]] = {};
+        if( data[day1] >= dayFrom && data[day1] <= dayTo ) {
+            // summary
+            const k1 = key1
+            const k2 = key2
+            const d1 = day1
+            const dw = dayWidth
+            if( ! summary[data[k1]] ) {
+                summary[data[k1]] = {};
+            }
+            if( ! summary[data[k1]][data[k2]] ) {
+                summary[data[k1]][data[k2]] = {};
+            }
+            if( ! summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] ) {
+                summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] = 0;
+            }
+            if(! data.date) {result.log.push(data)}
+            summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] += data.shusi; 
         }
-        if( ! summary[data[k1]][data[k2]] ) {
-            summary[data[k1]][data[k2]] = {};
-        }
-        if( ! summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] ) {
-            summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] = 0;
-        }
-        if(! data.date) {result.log.push(data)}
-        summary[data[k1]][data[k2]][data[d1]?.slice(0,dw)] += data.shusi; 
     });
     result.log.push(Date()+" calculated")
 
@@ -363,7 +365,7 @@ exports.updateSummary = async (db, kakeiboCollectionName, summaryCollectionName,
     }
     result.log.push(Date()+ " added summary: "+dataList.length)
     result.log.push("*** job has been sumitted to background...")
-    return Promise.all(dataList.map((a)=>(coll2.add(a))))
+    return await Promise.all(dataList.map((a)=>(coll2.add(a))))
 };
 
 exports.guessHimokuGetKey = (data) => {

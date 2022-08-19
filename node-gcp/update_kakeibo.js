@@ -29,7 +29,7 @@ const firebaseConfig = {
         console.log(c.id);
     });
     */
-
+/*
     // update kakeibo DB
     const logger = myKakeibo.loggerBatchGenerator()
     const ps = myKakeibo.updateKakeiboDB(db, "kakeibo", logger);
@@ -53,6 +53,14 @@ const firebaseConfig = {
     await ps3;
     console.log(logger3(""))
     console.log(Date()+" finish update Zandaka")
+*/
+    // update kakeibo summary
+    const logger4 = myKakeibo.loggerBatchGenerator()
+    const ps4 = myKakeibo.updateKakeiboSummary(db, "kakeibo", "kakeibo_summary", "category_FPlan", "hinmoku", "date", "2021/01/01", "2021/12/31", 4);
+    console.log(Date()+" submited update Summary")
+    await ps4;
+    console.log(logger4(""))
+    console.log(Date()+" finish update Summary")
     
 })();
 
