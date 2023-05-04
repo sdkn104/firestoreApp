@@ -167,6 +167,32 @@ exports.updateKakeiboAccum = functions
 });
 
 
+exports.fillGuessedHimoku = functions
+    .runWith({
+            timeoutSeconds: 120,
+            memory: '1GB'
+    }).https.onRequest(async (req, res) => {
+        // Grab the text parameter.
+        const original = req.query.text;
+        const result = {log:[]}
+        let ps;
+        try {
+            const logger = myKakeibo.loggerBatchGenerator()
+            ps = await myKakeibo.fillGuessedHimoku(admin.firestore(), "kakeibo", logger);
+            logger("finished: "+new Date());
+            result.log.push(logger(""))
+        } catch(e) {
+            result.errmes = e.message;
+            result.error = e;
+            result.stack = e.stack;
+        } finally {
+            res.set('Content-Type', 'text/plain')
+            res.send(JSON.stringify(result, null, 2) + "\nlog:\n" + result.log)
+            return ps;
+        }
+});
+
+
 /*
 // https://cloud.google.com/firestore/docs/extend-with-functions?hl=ja
 // Listen for updates to any `user` document.

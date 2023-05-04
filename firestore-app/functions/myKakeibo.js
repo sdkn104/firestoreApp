@@ -246,6 +246,34 @@ exports.updateKakeiboAccum = async (kakeiboDB, collectionName, logger = exports.
     return updates;
 }
 
+// guess himoku
+exports.fillGuessedHimoku = async (kakeiboDB, collectionName, logger = exports.loggerConsole) => {
+    logger("fillGuessedHimoku");
+
+    // modify 16 bank (auto set 費目等)
+    const guess = await exports.guessHimoku(kakeiboDB, collectionName);
+    ss2= await kakeiboDB.collection(collectionName).get();
+    logger("got snapshot "+ss2.size);
+    docs2 = ss2.docs;
+    let updates = []
+    let p;
+    for(let i=0; i<docs2.length; i++) {
+        const doc = docs2[i];
+        const dd = doc.data();
+        if( true ) {
+            const key = exports.guessHimokuGetKey(dd);
+            const g = guess[key];
+            if(!dd.himoku && g) { // no himoku, guess exists
+                //logger({himoku:g.himoku, utiwake:g.utiwake}, dd)
+                p = doc.ref.update({himoku:g.himoku, utiwake:g.utiwake});
+            }
+            updates.push(p)
+        }
+    }
+    logger("updates submitted: "+updates.length);
+    return updates;
+    //await Promise.all(updates)
+}
 
 // update DB and Accum
 exports.recalculateDB = async function(kakeiboDB, collectionName) {
@@ -367,6 +395,7 @@ exports.updateKakeiboSummary = async (db, kakeiboCollectionName, summaryCollecti
     result.log.push("*** job has been sumitted to background...")
     return await Promise.all(dataList.map((a)=>(coll2.add(a))))
 };
+
 
 exports.guessHimokuGetKey = (data) => {
     function zenkaku2hankaku(str) { // 英数字のみ
