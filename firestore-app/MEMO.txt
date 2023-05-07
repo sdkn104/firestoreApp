@@ -24,8 +24,8 @@ Create Cloud function
      npm install [-g] firebase-tools
 - firebase login [--no-localhost]     # google accuntでログイン
 - cd firebase project directory
-- firebase init firestore
-- firebase init functions 
+- firebase init firestore  (初回のみ？)
+- firebase init functions 　（初回のみ？）
 
 * cd functions; npm install (for reconstruct environment)
 

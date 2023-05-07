@@ -17,5 +17,6 @@ RUN/BUILD
 > cd vue-proj
 > // npm run lint
 > // npm run serve
-> npm run build  // compile ./public and ./src  into ./dist
-> cp -rf ./dist web-server-static-folder/vue_kakeibo
+> DEPLOY.sh
+> //npm run build  // compile ./public and ./src  into ./dist
+> //cp -rf ./dist web-server-static-folder/vue_kakeibo
